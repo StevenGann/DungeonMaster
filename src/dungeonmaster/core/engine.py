@@ -9,7 +9,6 @@ to the note taker. See docs/ARCHITECTURE.md for the full sequence diagram.
 
 import json
 import re
-from typing import Any
 
 from dungeonmaster.ai.orchestrator import AIOrchestrator
 from dungeonmaster.ai.rag import RAGStore

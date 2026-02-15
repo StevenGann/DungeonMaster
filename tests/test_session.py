@@ -1,8 +1,6 @@
 """Tests for Session and SessionManager."""
 
-import pytest
-
-from dungeonmaster.core.session import Session, SessionManager, Turn
+from dungeonmaster.core.session import Session, SessionManager
 
 
 def test_session_add_turn():

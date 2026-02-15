@@ -8,7 +8,6 @@ Markdown files through the vault. See docs/VAULT_AND_STATE.md for the schema.
 
 import json
 from dataclasses import asdict, dataclass, field
-from pathlib import Path
 from typing import Any
 
 from dungeonmaster.data.vault import Vault

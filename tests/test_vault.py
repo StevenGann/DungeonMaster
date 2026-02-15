@@ -1,7 +1,5 @@
 """Tests for Vault paths and read/write."""
 
-from pathlib import Path
-
 import pytest
 
 from dungeonmaster.data.vault import Vault

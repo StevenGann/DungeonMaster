@@ -5,7 +5,6 @@ One DungeonMaster instance = one campaign; vault root holds a single vault.
 """
 
 from pathlib import Path
-from typing import BinaryIO, TextIO
 
 
 class Vault:

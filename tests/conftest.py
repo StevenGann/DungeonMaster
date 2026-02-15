@@ -1,6 +1,5 @@
 """Pytest fixtures: temp vault, config, providers (mocked where needed)."""
 
-import os
 from pathlib import Path
 
 import pytest

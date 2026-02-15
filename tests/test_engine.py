@@ -6,7 +6,6 @@ import pytest
 
 from dungeonmaster.core.engine import Engine, _extract_scene_update
 from dungeonmaster.core.session import SessionManager
-from dungeonmaster.data.state import StateStore
 from dungeonmaster.ai.orchestrator import AIOrchestrator
 from dungeonmaster.ai.providers.base import GenerateResult
 

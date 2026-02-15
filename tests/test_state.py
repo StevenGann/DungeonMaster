@@ -1,15 +1,10 @@
 """Tests for SceneState and StateStore."""
 
-import json
-from pathlib import Path
-
 import pytest
 
 from dungeonmaster.data.state import (
     SceneState,
     StateStore,
-    Location,
-    Position,
 )
 
 

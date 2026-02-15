@@ -1,7 +1,5 @@
 """Tests for NoteTaker."""
 
-import pytest
-
 from dungeonmaster.core.note_taker import NoteTaker
 
 
