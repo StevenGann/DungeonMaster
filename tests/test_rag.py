@@ -1,16 +1,23 @@
 """Tests for RAG chunking and store (ChromaDB with in-memory or temp persist)."""
 
+import os
 import sys
 import pytest
 
 from dungeonmaster.ai.rag import _chunk_text, RAGStore
+from dungeonmaster.data.vault import Vault
 
 # ChromaDB/pydantic may be incompatible with Python 3.14+
 pytestmark = pytest.mark.skipif(
     sys.version_info >= (3, 14),
     reason="ChromaDB not yet compatible with Python 3.14+",
 )
-from dungeonmaster.data.vault import Vault
+
+# Skip the test that instantiates ChromaDB in CI (can hang for hours on GH runners)
+skip_chromadb_in_ci = pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS") == "true",
+    reason="ChromaDB PersistentClient can hang in GitHub Actions; run RAG store test locally",
+)
 
 
 def test_chunk_text_empty():
@@ -29,6 +36,7 @@ def test_chunk_text_with_overlap():
     assert all(len(c) <= 100 for c in chunks)
 
 
+@skip_chromadb_in_ci
 @pytest.mark.asyncio
 async def test_rag_ingest_and_query(tmp_path):
     vault = Vault(tmp_path)

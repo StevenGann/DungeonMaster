@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
@@ -28,10 +29,12 @@ jobs:
 
       - name: Run tests
         run: pytest tests -v --tb=short
+        timeout-minutes: 3
 
       - name: Coverage (3.11 only)
         if: matrix.python-version == '3.11'
         run: pytest tests -v --cov=src/dungeonmaster --cov-report=xml --cov-report=term-missing
+        timeout-minutes: 3
 
   lint:
     runs-on: ubuntu-latest
