@@ -93,7 +93,7 @@ sequenceDiagram
     Engine->>State: load_character(user_id)
     State-->>Engine: character Markdown
 
-    Note: Engine builds system prompt: scene + character + RAG chunks
+    Note over Engine: Builds system prompt (scene + character + RAG chunks)
 
     Engine->>Session: to_messages(max_turns)
     Session-->>Engine: recent conversation
@@ -105,7 +105,7 @@ sequenceDiagram
 
     Engine->>Session: add_turn("assistant", reply)
 
-    alt Reply contains ```json ... ``` scene block
+    alt Reply contains JSON scene block
         Engine->>State: save_scene(parsed SceneState)
     end
 
