@@ -1,0 +1,31 @@
+# DungeonMaster: one campaign per compose stack
+# Mount ./data as vault; set DISCORD_BOT_TOKEN and optional ANTHROPIC_API_KEY
+
+services:
+  dungeonmaster:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ../data:/data
+    environment:
+      - DUNGEONMASTER_CONFIG=/app/config/default.yaml
+      - VAULT_PATH=/data
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    restart: unless-stopped
+    # Optional: use host Ollama
+    # extra_hosts: ["host.docker.internal:host-gateway"]
+    # environment: AI_ollama_base_url: http://host.docker.internal:11434
+
+  # Optional: run Ollama in the same stack
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #   ports:
+  #     - "11434:11434"
+  #   restart: unless-stopped
+  #
+  # volumes:
+  #   ollama_data:

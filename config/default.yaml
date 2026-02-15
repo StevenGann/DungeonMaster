@@ -1,0 +1,24 @@
+# DungeonMaster default configuration
+# Override with DUNGEONMASTER_CONFIG or environment variables
+
+vault:
+  path: data  # Relative to cwd or absolute
+
+ai:
+  ollama:
+    base_url: http://localhost:11434
+    narrative_model: llama3.2
+    embedding_model: nomic-embed-text
+  claude:
+    api_key: ${ANTHROPIC_API_KEY}
+    ruling_model: claude-3-5-sonnet-20241022
+
+rag:
+  chunk_size: 512
+  chunk_overlap: 64
+  top_k: 5
+
+discord:
+  token: ${DISCORD_BOT_TOKEN}
+  # Optional: restrict to DMs only
+  dm_only: true

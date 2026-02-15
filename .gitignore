@@ -1,0 +1,64 @@
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual envs
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing / coverage
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+
+# DungeonMaster data (vault contents; keep structure in repo if desired)
+data/systems/
+data/notes/
+data/characters/
+data/npcs/
+data/state/
+data/_index/
+
+# Keep directory structure
+!data/systems/.gitkeep
+!data/notes/.gitkeep
+!data/characters/.gitkeep
+!data/npcs/.gitkeep
+!data/state/.gitkeep
+
+# Secrets
+.env
+.env.local
+*.pem
+
+# OS
+.DS_Store
+Thumbs.db
