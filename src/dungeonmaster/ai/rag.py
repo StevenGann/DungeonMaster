@@ -8,7 +8,7 @@ chunks for a given string, for injection into the DM's system prompt.
 """
 
 from pathlib import Path
-from typing import Callable, Awaitable
+from typing import Any, Awaitable, Callable
 
 from dungeonmaster.data.vault import Vault
 
@@ -44,6 +44,7 @@ class RAGStore:
         chunk_overlap: int = 64,
         top_k: int = 5,
         collection_name: str = "dungeonmaster_systems",
+        chroma_client: Any = None,
     ):
         self._vault = vault
         self._embed_fn = embed_fn
@@ -51,13 +52,16 @@ class RAGStore:
         self._chunk_overlap = chunk_overlap
         self._top_k = top_k
         self._collection_name = collection_name
-        persist_dir = str(vault.index_dir() / "chroma")
-        import chromadb
-        from chromadb.config import Settings
-        self._client = chromadb.PersistentClient(
-            path=persist_dir,
-            settings=Settings(anonymized_telemetry=False),
-        )
+        if chroma_client is not None:
+            self._client = chroma_client
+        else:
+            import chromadb
+            from chromadb.config import Settings
+            persist_dir = str(vault.index_dir() / "chroma")
+            self._client = chromadb.PersistentClient(
+                path=persist_dir,
+                settings=Settings(anonymized_telemetry=False),
+            )
         self._collection = self._client.get_or_create_collection(
             name=collection_name,
             metadata={"description": "System rulebooks and source content"},
