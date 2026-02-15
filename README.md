@@ -24,7 +24,7 @@ AI-powered Dungeon Master for TTRPGs (D&D, Pathfinder, homebrew, etc.). One inst
 1. **Clone and install**
 
    ```bash
-   git clone https://github.com/your-org/DungeonMaster.git
+   git clone https://github.com/StevenGann/DungeonMaster.git
    cd DungeonMaster
    pip install -e ".[dev]"
    ```
@@ -59,13 +59,19 @@ AI-powered Dungeon Master for TTRPGs (D&D, Pathfinder, homebrew, etc.). One inst
 
 ## Docker
 
+The Docker image is **built and published by GitHub Actions** to [GitHub Container Registry](https://github.com/StevenGann/DungeonMaster/pkgs/container/dungeonmaster) (ghcr.io) on push to `main`/`master` and on version tags.
+
+**Run with the published image:**
+
 ```bash
 cd DungeonMaster
 export DISCORD_BOT_TOKEN=your_token
-docker compose -f docker/docker-compose.yml up --build
+docker compose -f docker/docker-compose.yml up -d
 ```
 
-Mount your vault: the compose file mounts `../data` at `/data`. Set `VAULT_PATH=/data` (or equivalent) so the app uses it. For local Ollama, point the app at the host (e.g. `http://host.docker.internal:11434`).
+The default image is `ghcr.io/stevengann/dungeonmaster:latest`. Set `DM_IMAGE` to override (e.g. a specific tag).
+
+The compose file mounts `../data` at `/data` as the vault. For local Ollama, point the app at the host (e.g. `http://host.docker.internal:11434`).
 
 ## Project layout
 
@@ -88,7 +94,8 @@ DungeonMaster/
 │   └── interfaces/        # Discord bot
 ├── tests/
 ├── docker/
-└── .github/workflows/ci.yml
+├── .github/workflows/ci.yml
+└── .github/workflows/docker.yml
 ```
 
 ## Development
@@ -97,7 +104,7 @@ DungeonMaster/
 - **Coverage:** `pytest tests --cov=src/dungeonmaster --cov-report=term-missing`
 - **Lint:** `ruff check src tests && ruff format --check src tests`
 
-CI runs on push/PR via GitHub Actions (test matrix: Python 3.10–3.12, plus ruff lint/format).
+CI runs on push/PR via GitHub Actions: test matrix (Python 3.10–3.12), ruff lint/format, and Docker build/push to ghcr.io on `main`/`master` and version tags.
 
 ## Configuration
 

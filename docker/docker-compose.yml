@@ -1,11 +1,10 @@
 # DungeonMaster: one campaign per compose stack
-# Mount ./data as vault; set DISCORD_BOT_TOKEN and optional ANTHROPIC_API_KEY
+# Uses the image from GitHub Container Registry (https://github.com/StevenGann/DungeonMaster/pkgs/container/dungeonmaster).
+# Set DM_IMAGE to override. Mount ./data as vault; set DISCORD_BOT_TOKEN and optional ANTHROPIC_API_KEY.
 
 services:
   dungeonmaster:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
+    image: ${DM_IMAGE:-ghcr.io/stevengann/dungeonmaster:latest}
     volumes:
       - ../data:/data
     environment:
