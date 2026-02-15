@@ -1,7 +1,5 @@
 """Tests for SceneState and StateStore."""
 
-import pytest
-
 from dungeonmaster.data.state import (
     SceneState,
     StateStore,

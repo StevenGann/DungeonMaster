@@ -31,6 +31,7 @@ def test_chunk_text_with_overlap():
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(30)
 async def test_rag_ingest_and_query(tmp_path):
     """Use EphemeralClient to avoid PersistentClient SQLite hang in CI."""
     import chromadb

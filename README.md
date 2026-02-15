@@ -115,6 +115,8 @@ DungeonMaster/
 - **Coverage:** `pytest tests --cov=src/dungeonmaster --cov-report=term-missing`
 - **Lint:** `ruff check src tests && ruff format --check src tests`
 
+On Windows, the RAG tests can hang with pytest-timeout’s thread method; CI (Linux) uses the signal method and should complete. To run tests excluding RAG on Windows: `pytest tests -v --ignore=tests/test_rag.py`
+
 CI runs on push/PR via GitHub Actions: test matrix (Python 3.10–3.12), ruff lint/format, and Docker build/push to ghcr.io on `main`/`master` and version tags.
 
 ## Configuration
