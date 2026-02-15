@@ -1,5 +1,9 @@
 """
-DungeonMaster entrypoint: load config, wire vault/RAG/state/engine, start Discord (and optional watcher).
+DungeonMaster application entrypoint.
+
+Loads config (YAML + env), builds the vault, RAG store, state store, AI
+orchestrator, and engine; optionally runs initial RAG ingest; starts the
+file watcher and the Discord bot. One process = one campaign.
 """
 
 import asyncio

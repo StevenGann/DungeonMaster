@@ -1,5 +1,8 @@
 """
 Claude (Anthropic) provider for rulings and planning.
+
+Used as the ruling_provider in the orchestrator when ANTHROPIC_API_KEY is set.
+Configure ruling_model in config ai.claude.
 """
 
 from typing import Any

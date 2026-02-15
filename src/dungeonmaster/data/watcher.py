@@ -1,8 +1,11 @@
 """
-File watcher: monitor systems/, characters/, npcs/ for changes; trigger re-ingest or refresh.
+Vault file watcher: monitor systems/, characters/, npcs/ for filesystem changes.
 
-Callbacks are synchronous; the application can schedule async re-ingest from
-on_system_change (e.g. via an asyncio queue consumed by a background task).
+When a system file (.md, .txt under systems/) changes, on_system_change(path)
+is called so the app can re-ingest that path into RAG. When a character or
+NPC file changes, on_character_or_npc_change(path) can refresh in-memory state.
+Callbacks are synchronous; main.py uses asyncio.run_coroutine_threadsafe to
+schedule async re-ingest from the watcher thread.
 """
 
 import logging

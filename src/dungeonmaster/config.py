@@ -1,7 +1,10 @@
 """
-Load and resolve DungeonMaster configuration from YAML with env var substitution.
+DungeonMaster configuration loader.
 
-Environment variables referenced as ${VAR_NAME} in YAML are expanded.
+Reads YAML from a file (default: config/default.yaml or DUNGEONMASTER_CONFIG)
+and resolves environment variable placeholders. Any string value containing
+${VAR_NAME} is replaced with os.environ.get("VAR_NAME", "${VAR_NAME}").
+VAULT_PATH can override vault.path after loading.
 """
 
 import os

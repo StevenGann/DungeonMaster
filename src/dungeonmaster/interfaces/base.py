@@ -1,6 +1,9 @@
 """
-Interface abstraction: core engine receives Message, returns Response.
-Adapters (Discord, Web, CLI) translate to/from this contract.
+Interface abstraction for DungeonMaster.
+
+The core engine speaks only Message (session_id, user_id, content) and returns
+reply text. Interface adapters (Discord, future Web/CLI) translate
+platform-specific events into Message and send the reply back to the user.
 """
 
 from dataclasses import dataclass

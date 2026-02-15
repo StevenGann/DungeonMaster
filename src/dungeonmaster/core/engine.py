@@ -1,5 +1,10 @@
 """
-Core engine: route messages, manage session, call AI + RAG, update state, trigger notes.
+Core message-handling engine.
+
+Single entrypoint for player messages: loads session (history), RAG context,
+scene state, and character sheet; builds a system prompt; calls the AI
+orchestrator; parses optional scene JSON from the reply and saves it; appends
+to the note taker. See docs/ARCHITECTURE.md for the full sequence diagram.
 """
 
 import json
@@ -14,7 +19,7 @@ from dungeonmaster.data.state import SceneState, StateStore
 
 
 def _extract_scene_update(text: str) -> dict | None:
-    """If the model returned a JSON block for scene update, parse it. Otherwise None."""
+    """Parse first ```json ... ``` fenced block in text; return None if missing or invalid."""
     match = re.search(r"```json\s*([\s\S]*?)\s*```", text)
     if match:
         try:
@@ -58,7 +63,7 @@ class Engine:
         session = self._session_manager.get_or_create(session_id)
         session.add_turn("user", content)
 
-        # Build context
+        # Retrieve relevant rule/lore chunks for the system prompt
         rag_context = ""
         if self._rag:
             try:
@@ -78,6 +83,7 @@ class Engine:
         character = self._state_store.load_character(user_id)
         character_block = f"Player character sheet:\n{character}" if character else "No character sheet for this player yet."
 
+        # Assemble system prompt: role, scene, character, optional RAG context
         system = f"""You are the Dungeon Master for a TTRPG. Use only the provided rule context when making rulings.
 
 {scene_block}
@@ -100,7 +106,7 @@ class Engine:
         reply = result.text.strip()
         session.add_turn("assistant", reply)
 
-        # Optional: parse scene update from reply
+        # If the model returned a ```json ... ``` block, persist as new scene state
         scene_update = _extract_scene_update(reply)
         if scene_update:
             try:
@@ -111,6 +117,7 @@ class Engine:
 
         if self._note_taker:
             self._note_taker.note_event("player", content)
-            self._note_taker.note_event("dm", reply)
+            self._note_taker.note_event("dm", reply)  # Append both to vault notes/
+
 
         return reply

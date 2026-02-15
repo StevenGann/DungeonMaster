@@ -1,5 +1,9 @@
 """
-Session: one player's conversation with the DM (session_id = e.g. Discord user/channel id).
+Per-player session and session manager.
+
+A Session holds the conversation turns (user/assistant) for one player.
+Session ID is typically the Discord user ID or DM channel ID. SessionManager
+keeps all sessions in memory (one campaign = one manager).
 """
 
 from dataclasses import dataclass, field

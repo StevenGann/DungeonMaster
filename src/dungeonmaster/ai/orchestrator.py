@@ -1,5 +1,9 @@
 """
-AI orchestrator: route narrative vs ruling tasks to appropriate providers, optional parallel calls.
+AI orchestrator: route by task type to narrative vs ruling provider.
+
+Narrative (flavor text, descriptions) uses the narrative_provider (e.g. Ollama).
+Ruling (rules, planning, adjudication) uses the ruling_provider (e.g. Claude).
+Falls back to the other if one is missing. generate() is the single entrypoint.
 """
 
 from typing import Any

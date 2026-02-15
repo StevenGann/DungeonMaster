@@ -1,5 +1,8 @@
 """
-Ollama provider for local models (narrative, embeddings).
+Ollama provider: local LLM completion and embeddings.
+
+Used for narrative generation and (via embed()) for RAG embeddings. Configure
+base_url, default_model (narrative), and embedding_model in config ai.ollama.
 """
 
 from typing import Any

@@ -1,5 +1,10 @@
 """
-Discord bot: players DM the bot. Commands: /start, /action, /say, /status, /notes.
+Discord bot interface for DungeonMaster.
+
+Players interact by DMing the bot. Slash commands: /start, /action, /say,
+/status, /notes. Each command and each plain DM message is forwarded to
+engine.handle_message(session_id=user_id, user_id, content, task_type).
+Replies are sent back to the channel (truncated to 2000 chars for Discord).
 """
 
 import logging

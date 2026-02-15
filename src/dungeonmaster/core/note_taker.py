@@ -1,5 +1,8 @@
 """
-Note Taker: append session events to Markdown notes in the vault.
+Note Taker: append session events to Markdown files in the vault's notes/ directory.
+
+Each event is recorded with a timestamp and role (player/dm). Used to maintain
+a session log that can be viewed or edited in Obsidian.
 """
 
 from datetime import datetime, timezone

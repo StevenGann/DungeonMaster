@@ -73,6 +73,16 @@ The default image is `ghcr.io/stevengann/dungeonmaster:latest`. Set `DM_IMAGE` t
 
 The compose file mounts `../data` at `/data` as the vault. For local Ollama, point the app at the host (e.g. `http://host.docker.internal:11434`).
 
+## Documentation
+
+Detailed documentation lives in the [docs/](docs/) directory:
+
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — System overview, component diagram, message flow (sequence diagram), AI task routing, RAG pipeline, file watcher, and concurrency.
+- **[docs/VAULT_AND_STATE.md](docs/VAULT_AND_STATE.md)** — Vault directory layout, scene JSON schema, character/NPC Markdown, and data flow.
+- **[docs/README.md](docs/README.md)** — Documentation index and diagram list.
+
+All diagrams are in [Mermaid](https://mermaid.js.org/) and render on GitHub.
+
 ## Project layout
 
 ```
@@ -92,6 +102,7 @@ DungeonMaster/
 │   ├── ai/                # Orchestrator, RAG, providers (ollama, claude)
 │   ├── data/              # Vault, state, watcher
 │   └── interfaces/        # Discord bot
+├── docs/                  # Architecture and vault/state documentation
 ├── tests/
 ├── docker/
 ├── .github/workflows/ci.yml

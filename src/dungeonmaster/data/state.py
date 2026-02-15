@@ -1,5 +1,9 @@
 """
-State management: scene JSON (VTT sync) and character/NPC Markdown load/save.
+State management: scene JSON and character/NPC Markdown.
+
+SceneState is the in-memory representation of state/scene.json (location,
+positions, turn_order). StateStore reads/writes scene JSON and character/NPC
+Markdown files through the vault. See docs/VAULT_AND_STATE.md for the schema.
 """
 
 import json

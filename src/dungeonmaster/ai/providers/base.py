@@ -1,5 +1,9 @@
 """
-Abstract base for AI providers. All providers implement generate() for completion.
+Abstract base for LLM providers (Ollama, Claude, etc.).
+
+Each provider implements generate(prompt, model?, system?, **kwargs) and
+optionally is_available(). The orchestrator calls generate with a task_type
+to select narrative vs ruling model.
 """
 
 from abc import ABC, abstractmethod

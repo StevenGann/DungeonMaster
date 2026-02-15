@@ -1,5 +1,10 @@
 """
-RAG store: chunk system documents, embed with Ollama, store in ChromaDB, retrieve by query.
+RAG (Retrieval-Augmented Generation) store for system-agnostic rules and lore.
+
+Reads Markdown/TXT from the vault's systems/ directory, chunks with a sliding
+window, embeds via an async embed_fn (e.g. Ollama), and stores vectors in ChromaDB
+(persisted under vault/_index/chroma). Query returns the top-k most similar
+chunks for a given string, for injection into the DM's system prompt.
 """
 
 from pathlib import Path
@@ -9,7 +14,7 @@ from dungeonmaster.data.vault import Vault
 
 
 def _chunk_text(text: str, chunk_size: int = 512, overlap: int = 64) -> list[str]:
-    """Sliding-window chunking by character count."""
+    """Sliding-window chunking by character count. Overlap characters are shared between adjacent chunks."""
     if not text or chunk_size <= 0:
         return []
     chunks: list[str] = []
