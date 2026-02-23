@@ -8,7 +8,7 @@ Replies are sent back to the channel (truncated to 2000 chars for Discord).
 """
 
 import logging
-from typing import Any
+from typing import Awaitable, Callable
 
 import discord
 from discord import app_commands
@@ -16,6 +16,10 @@ from discord.ext import commands
 
 
 logger = logging.getLogger(__name__)
+
+# Type alias for the engine handle_message callback
+# Signature: async (session_id, user_id, content, task_type) -> reply_text
+EngineHandleMessage = Callable[[str, str, str, str], Awaitable[str]]
 
 
 class DiscordBot(commands.Bot):
@@ -27,7 +31,7 @@ class DiscordBot(commands.Bot):
     def __init__(
         self,
         token: str,
-        engine_handle_message: Any,  # async (session_id, user_id, content, task_type?) -> str
+        engine_handle_message: EngineHandleMessage,
         dm_only: bool = True,
         command_prefix: str = "!",
         intents: discord.Intents | None = None,
@@ -63,7 +67,7 @@ class DiscordBot(commands.Bot):
                 session_id,
                 str(interaction.user.id),
                 "[Player used /start to begin or resume the game.]",
-                task_type="narrative",
+                "narrative",
             )
             await interaction.followup.send(reply[:2000], ephemeral=True)
         return start
@@ -78,7 +82,7 @@ class DiscordBot(commands.Bot):
                 session_id,
                 str(interaction.user.id),
                 f"[Action] {action}",
-                task_type="narrative",
+                "narrative",
             )
             await interaction.followup.send(reply[:2000])
         return action
@@ -93,7 +97,7 @@ class DiscordBot(commands.Bot):
                 session_id,
                 str(interaction.user.id),
                 f"[Says] {text}",
-                task_type="narrative",
+                "narrative",
             )
             await interaction.followup.send(reply[:2000])
         return say
@@ -108,7 +112,7 @@ class DiscordBot(commands.Bot):
                 session_id,
                 str(interaction.user.id),
                 f"[Status/Ruling] {question}",
-                task_type="ruling",
+                "ruling",
             )
             await interaction.followup.send(reply[:2000])
         return status
@@ -122,7 +126,7 @@ class DiscordBot(commands.Bot):
                 session_id,
                 str(interaction.user.id),
                 "[Player requested recent session notes summary.]",
-                task_type="ruling",
+                "ruling",
             )
             await interaction.followup.send(reply[:2000], ephemeral=True)
         return notes
@@ -141,7 +145,7 @@ class DiscordBot(commands.Bot):
                 session_id,
                 str(message.author.id),
                 message.content,
-                task_type="narrative",
+                "narrative",
             )
             await message.channel.send(reply[:2000])
         except Exception as e:

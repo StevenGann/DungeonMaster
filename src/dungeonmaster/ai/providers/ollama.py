@@ -56,7 +56,13 @@ class OllamaProvider(BaseAIProvider):
         return GenerateResult(text=text, model=model, raw=response)
 
     async def embed(self, texts: list[str]) -> list[list[float]]:
-        """Return embedding vectors for each text. Uses embedding_model."""
+        """
+        Return embedding vectors for each text. Uses embedding_model.
+
+        Note: Ollama's embeddings API currently only supports single-text embedding,
+        so we process texts sequentially. If Ollama adds batch embedding support in
+        the future, this method should be updated to use it for better performance.
+        """
         if not texts:
             return []
         out = []

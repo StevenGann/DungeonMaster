@@ -8,9 +8,13 @@ to the note taker. See docs/ARCHITECTURE.md for the full sequence diagram.
 """
 
 import json
+import logging
 import re
 
 from dungeonmaster.ai.orchestrator import AIOrchestrator
+
+
+logger = logging.getLogger(__name__)
 from dungeonmaster.ai.rag import RAGStore
 from dungeonmaster.core.note_taker import NoteTaker
 from dungeonmaster.core.session import SessionManager
@@ -69,8 +73,8 @@ class Engine:
                 chunks = await self._rag.query(content, top_k=5)
                 if chunks:
                     rag_context = "\n\n---\n\n".join(chunks)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("RAG query failed for session %s: %s", session_id, e)
 
         scene = self._state_store.load_scene()
         scene_block = f"Current scene: {scene.location.name}. {scene.location.description}"
@@ -111,8 +115,8 @@ class Engine:
             try:
                 new_scene = SceneState.from_dict(scene_update)
                 self._state_store.save_scene(new_scene)
-            except (TypeError, KeyError):
-                pass
+            except (TypeError, KeyError) as e:
+                logger.warning("Failed to parse scene update from reply: %s", e)
 
         if self._note_taker:
             self._note_taker.note_event("player", content)

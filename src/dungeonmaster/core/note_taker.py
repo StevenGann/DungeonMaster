@@ -20,7 +20,7 @@ class NoteTaker:
     def __init__(self, vault: Vault, note_id: str | None = None):
         self._vault = vault
         self._vault.ensure_all_dirs()
-        self._note_id = note_id or f"session-{datetime.utcnow().strftime('%Y%m%d')}"
+        self._note_id = note_id or f"session-{datetime.now(timezone.utc).strftime('%Y%m%d')}"
 
     def _path(self) -> Path:
         return self._vault.note_path(self._note_id)
