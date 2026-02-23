@@ -11,7 +11,7 @@ ai:
     embedding_model: nomic-embed-text
   claude:
     api_key: ${ANTHROPIC_API_KEY}
-    ruling_model: claude-3-5-sonnet-20241022
+    ruling_model: claude-sonnet-4-20250514
 
 rag:
   chunk_size: 512
