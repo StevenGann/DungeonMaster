@@ -38,8 +38,33 @@ async def test_engine_handle_message(vault, state_store):
         session_manager=SessionManager(),
         note_taker=None,
     )
-    reply = await engine.handle_message("sess1", "user1", "I attack the dragon.")
+    reply = await engine.handle_message("sess1", "user1", "I attack the dragon.", source="dm")
     assert "dragon" in reply.lower()
     session = engine._session_manager.get("sess1")
     assert session is not None
     assert len(session.turns) == 2  # user + assistant
+
+
+@pytest.mark.asyncio
+async def test_engine_handle_message_with_source_channel(vault, state_store):
+    """Test engine accepts channel source parameter."""
+    async def fake_generate(prompt, system=None, task_type="narrative", **kwargs):
+        return GenerateResult(text="The dragon retreats.", model="test", raw=None)
+
+    mock_provider = AsyncMock()
+    mock_provider.generate = fake_generate
+    mock_provider.default_model = "test"
+    orchestrator = AIOrchestrator(narrative_provider=mock_provider, ruling_provider=None)
+    engine = Engine(
+        orchestrator=orchestrator,
+        rag=None,
+        state_store=state_store,
+        session_manager=SessionManager(),
+        note_taker=None,
+    )
+    reply = await engine.handle_message(
+        "sess2", "user2", "I cast fireball.", task_type="narrative", source="channel:123456"
+    )
+    assert "dragon" in reply.lower()
+    session = engine._session_manager.get("sess2")
+    assert session is not None

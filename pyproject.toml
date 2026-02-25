@@ -49,8 +49,8 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-v --tb=short --timeout=120"
-# Use "signal" on Unix (CI) to avoid deadlocks; "thread" can deadlock on Windows with pytest-asyncio
-timeout_method = "signal"
+# Use "thread" for Windows compatibility; "signal" works on Unix/CI but SIGALRM unavailable on Windows
+timeout_method = "thread"
 
 [tool.coverage.run]
 source = ["src/dungeonmaster"]

@@ -126,14 +126,44 @@ async def run_async(config: dict) -> None:
     watcher = VaultWatcher(vault, on_system_change=on_system_change)
     watcher.start()
 
+    # Extract channel configuration
+    channels_cfg = discord_cfg.get("channels", {})
+
+    # Session Notes channel
+    session_notes_cfg = channels_cfg.get("session_notes", {})
+    session_notes_channel_id = session_notes_cfg.get("id")
+
+    # Gameplay channels
+    gameplay_channels = channels_cfg.get("gameplay", [])
+    gameplay_channel_ids = [ch["id"] for ch in gameplay_channels if ch.get("id")]
+
+    # DM user IDs for admin commands
+    dm_user_ids = discord_cfg.get("dm_user_ids", [])
+
+    # Get state_store from engine for player registration commands
+    state_store = engine._state_store
+
     bot = DiscordBot(
         token=token,
         engine_handle_message=engine.handle_message,
-        dm_only=discord_cfg.get("dm_only", True),
+        state_store=state_store,
+        dm_only=discord_cfg.get("dm_only", False),
+        guild_id=discord_cfg.get("guild_id"),
+        session_notes_channel_id=session_notes_channel_id,
+        gameplay_channel_ids=gameplay_channel_ids,
+        dm_user_ids=dm_user_ids,
     )
+
+    # Connect NoteTaker to bot's public note method after bot is ready
+    async def connect_note_taker() -> None:
+        await bot.wait_until_ready()
+        if engine._note_taker:
+            engine._note_taker.set_public_note_callback(bot.post_session_note)
+            logger.info("NoteTaker connected to Discord Session Notes channel")
 
     async def run_bot():
         async with bot:
+            asyncio.create_task(connect_note_taker())
             await bot.start(token)
 
     try:

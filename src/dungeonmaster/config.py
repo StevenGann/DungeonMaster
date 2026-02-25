@@ -12,6 +12,7 @@ Secrets (API keys, tokens) can be loaded from:
 VAULT_PATH can override vault.path after loading.
 """
 
+from dataclasses import dataclass, field
 import json
 import logging
 import os
@@ -20,6 +21,65 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
+
+@dataclass
+class ChannelConfig:
+    """Configuration for a single Discord channel."""
+
+    id: int | None
+    name: str
+    description: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ChannelConfig":
+        return cls(
+            id=data.get("id"),
+            name=data.get("name", ""),
+            description=data.get("description", ""),
+        )
+
+
+@dataclass
+class DiscordChannelsConfig:
+    """Configuration for designated Discord channels."""
+
+    session_notes: ChannelConfig | None = None
+    gameplay: list[ChannelConfig] = field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "DiscordChannelsConfig":
+        session_notes_data = data.get("session_notes")
+        session_notes = ChannelConfig.from_dict(session_notes_data) if session_notes_data else None
+
+        gameplay_data = data.get("gameplay", [])
+        gameplay = [ChannelConfig.from_dict(ch) for ch in gameplay_data]
+
+        return cls(session_notes=session_notes, gameplay=gameplay)
+
+    def gameplay_channel_ids(self) -> list[int]:
+        """Return list of configured gameplay channel IDs (excluding None)."""
+        return [ch.id for ch in self.gameplay if ch.id is not None]
+
+
+@dataclass
+class DiscordConfig:
+    """Configuration for Discord bot settings."""
+
+    token: str
+    dm_only: bool = False
+    guild_id: int | None = None
+    channels: DiscordChannelsConfig = field(default_factory=DiscordChannelsConfig)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "DiscordConfig":
+        channels_data = data.get("channels", {})
+        return cls(
+            token=data.get("token", ""),
+            dm_only=data.get("dm_only", False),
+            guild_id=data.get("guild_id"),
+            channels=DiscordChannelsConfig.from_dict(channels_data),
+        )
 
 
 logger = logging.getLogger(__name__)

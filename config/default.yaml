@@ -20,5 +20,29 @@ rag:
 
 discord:
   token: ${DISCORD_BOT_TOKEN}
-  # Optional: restrict to DMs only
-  dm_only: true
+  # Set to false to allow gameplay in designated server channels
+  dm_only: false
+  # Optional: restrict bot to a specific guild (server)
+  guild_id: null
+
+  # Discord user IDs that have DM (admin) permissions for /register, /unregister
+  # If empty, all users can use DM commands (not recommended for servers)
+  dm_user_ids: []
+
+  channels:
+    # Session Notes channel - public announcements and DM interaction notifications
+    # When players interact via DMs, a privacy-preserving notification is posted here
+    session_notes:
+      id: null  # Discord channel ID (required to enable this feature)
+      name: "session-notes"
+      description: "Public session notes and announcements visible to all players"
+
+    # Designated gameplay channels where players can interact with the DM
+    # Only messages in these channels (and DMs) will be processed
+    gameplay:
+      - id: null
+        name: "tavern"
+        description: "General roleplay and social interactions"
+      - id: null
+        name: "adventure"
+        description: "Main adventure gameplay channel"

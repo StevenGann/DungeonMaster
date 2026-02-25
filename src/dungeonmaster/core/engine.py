@@ -58,10 +58,18 @@ class Engine:
         user_id: str,
         content: str,
         task_type: str = "narrative",
+        source: str = "dm",
     ) -> str:
         """
         Process one user message: add to session, build prompt with RAG + state + history,
         generate reply, optionally update scene and notes. Returns assistant text.
+
+        Args:
+            session_id: Unique session identifier (typically user_id for 1:1 sessions)
+            user_id: Discord user ID
+            content: Message content from the player
+            task_type: "narrative" or "ruling" to route to appropriate AI provider
+            source: Message source - "dm" for direct messages, "channel:{id}" for guild channels
         """
         session = self._session_manager.get_or_create(session_id)
         session.add_turn("user", content)
@@ -83,7 +91,12 @@ class Engine:
                 f"{p.entity_id}({p.entity_type})" for p in scene.positions
             )
 
-        character = self._state_store.load_character(user_id)
+        # Look up character via player registry; fallback to legacy user_id-based lookup
+        character_path = self._state_store.get_active_character_path(user_id)
+        if character_path:
+            character = self._state_store.load_character_by_path(character_path)
+        else:
+            character = self._state_store.load_character(user_id)
         character_block = f"Player character sheet:\n{character}" if character else "No character sheet for this player yet."
 
         # Assemble system prompt: role, scene, character, optional RAG context
