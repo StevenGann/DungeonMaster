@@ -3,7 +3,7 @@ Discord bot interface for DungeonMaster.
 
 Players interact by DMing the bot or in designated server channels. Slash
 commands: /start, /action, /say, /status, /notes, /register, /characters,
-/switch, /unregister. Each command and each plain message is forwarded to
+/switch, /unregister, /roll. Each command and each plain message is forwarded to
 engine.handle_message(session_id=user_id, user_id, content, task_type, source).
 Replies are sent back to the channel (truncated to 2000 chars for Discord).
 
@@ -21,6 +21,8 @@ from discord.ext import commands
 
 if TYPE_CHECKING:
     from dungeonmaster.data.state import StateStore
+
+from dungeonmaster.core.dice_handler import DiceRollDeclaration, get_dice_handler
 
 
 logger = logging.getLogger(__name__)
@@ -79,6 +81,7 @@ class DiscordBot(commands.Bot):
         tree.add_command(self._cmd_characters())
         tree.add_command(self._cmd_switch())
         tree.add_command(self._cmd_unregister())
+        tree.add_command(self._cmd_roll())
         try:
             await tree.sync()
         except Exception as e:
@@ -404,6 +407,61 @@ class DiscordBot(commands.Bot):
                     ephemeral=True,
                 )
         return unregister
+
+    def _cmd_roll(self) -> app_commands.Command:
+        @app_commands.command(name="roll", description="Roll dice using standard notation")
+        @app_commands.describe(
+            dice="Dice notation (e.g., 1d20+5, 2d6, 4d6kh3, 1d20+5 DC:14)",
+            purpose="What the roll is for (optional)"
+        )
+        async def roll(
+            interaction: discord.Interaction,
+            dice: str,
+            purpose: str = "manual roll",
+        ) -> None:
+            await interaction.response.defer()
+
+            # Get character name if player is registered
+            character_name = ""
+            if self._state_store:
+                registry = self._state_store.load_player_registry()
+                player = registry.get_player(str(interaction.user.id))
+                if player:
+                    active_char = player.get_active_character()
+                    if active_char:
+                        character_name = active_char.name
+
+            # Use display name as fallback
+            if not character_name:
+                character_name = interaction.user.display_name
+
+            # Execute the roll
+            dice_handler = get_dice_handler()
+            declaration = DiceRollDeclaration(
+                notation=dice,
+                purpose=purpose,
+                character=character_name,
+            )
+
+            report = dice_handler.execute_roll(declaration)
+
+            if report is None:
+                await interaction.followup.send(
+                    f"❌ Could not parse dice notation: `{dice}`\n\n"
+                    "**Supported formats:**\n"
+                    "• Basic: `1d20`, `2d6`, `d8`, `d%`, `dF`\n"
+                    "• Modifiers: `1d20+5`, `2d6-2`\n"
+                    "• Multiple: `2d6+1d4+3`\n"
+                    "• Keep/Drop: `4d6kh3`, `2d20kl1`, `4d6dl1`\n"
+                    "• Exploding: `1d6!`, `1d6!>4`\n"
+                    "• Reroll: `1d6r1`, `1d6r<2`\n"
+                    "• Success count: `8d6>=5`\n"
+                    "• DC check: `1d20+5 DC:14`"
+                )
+                return
+
+            await interaction.followup.send(report.display_text)
+        return roll
 
     async def on_message(self, message: discord.Message) -> None:
         """Handle plain text messages in DMs or designated channels."""
